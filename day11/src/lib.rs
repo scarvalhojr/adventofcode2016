@@ -1,7 +1,6 @@
 use regex::Regex;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
-use std::iter::once_with;
 use std::rc::Rc;
 use std::str::FromStr;
 
@@ -141,13 +140,10 @@ impl Building {
                 .flat_map(move |(index, &object1)| {
                     objects[index + 1..]
                         .iter()
-                        .map(move |&object2| {
+                        .filter_map(move |&object2| {
                             self.move_to(floor, object1, Some(object2))
                         })
-                        .chain(once_with(move || {
-                            self.move_to(floor, object1, None)
-                        }))
-                        .filter_map(|building| building)
+                        .chain(self.move_to(floor, object1, None))
                 })
         })
     }
